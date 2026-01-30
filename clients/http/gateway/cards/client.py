@@ -1,65 +1,100 @@
 from typing import TypedDict
 
-import httpx
+from httpx import Response
 
 from clients.http.client import HTTPClient
+from clients.http.gateway.client import build_gateway_http_client
+
+
+# Добавили описание структуры карты
+class CardDict(TypedDict):
+    """
+    Описание структуры карты.
+    """
+    id: str
+    pin: str
+    cvv: str
+    type: str
+    status: str
+    accountId: str
+    cardNumber: str
+    cardHolder: str
+    expiryDate: str
+    paymentSystem: str
 
 
 class IssueVirtualCardRequestDict(TypedDict):
-    """Тело запроса для выпуска виртуальной карты."""
+    """
+    Структура данных для выпуска виртуальной карты.
+    """
     userId: str
     accountId: str
+
+
+# Добавили описание структуры ответа выпуска виртуальной карты
+class IssueVirtualCardResponseDict(TypedDict):
+    """
+    Описание структуры ответа выпуска виртуальной карты.
+    """
+    card: CardDict
 
 
 class IssuePhysicalCardRequestDict(TypedDict):
-    """Тело запроса для выпуска физической карты."""
+    """
+    Структура данных для выпуска физической карты.
+    """
     userId: str
     accountId: str
+
+
+# Добавили описание структуры ответа выпуска физической карты
+class IssuePhysicalCardResponseDict(TypedDict):
+    """
+    Описание структуры ответа выпуска физической карты.
+    """
+    card: CardDict
 
 
 class CardsGatewayHTTPClient(HTTPClient):
     """
-    HTTP-клиент для работы с эндпоинтами /api/v1/cards сервиса http-gateway.
-
-    Содержит методы для выпуска виртуальных и физических карт.
+    Клиент для взаимодействия с /api/v1/cards сервиса http-gateway.
     """
 
-    def issue_virtual_card_api(self, request: IssueVirtualCardRequestDict) -> httpx.Response:
+    def issue_virtual_card_api(self, request: IssueVirtualCardRequestDict) -> Response:
         """
-        Выпускает виртуальную карту.
+        Выпуск виртуальной карты.
 
-        Отправляет POST-запрос на эндпоинт:
-        /api/v1/cards/issue-virtual-card
-
-        Args:
-            request: Данные для выпуска виртуальной карты.
-                Формат:
-                {
-                    "userId": "<str>",
-                    "accountId": "<str>"
-                }
-
-        Returns:
-            httpx.Response: HTTP-ответ сервиса http-gateway.
+        :param request: Словарь с данными для выпуска виртуальной карты.
+        :return: Ответ от сервера (объект httpx.Response).
         """
         return self.post("/api/v1/cards/issue-virtual-card", json=request)
 
-    def issue_physical_card_api(self, request: IssuePhysicalCardRequestDict) -> httpx.Response:
+    def issue_physical_card_api(self, request: IssuePhysicalCardRequestDict) -> Response:
         """
-        Выпускает физическую карту.
+        Выпуск физической карты.
 
-        Отправляет POST-запрос на эндпоинт:
-        /api/v1/cards/issue-physical-card
-
-        Args:
-            request: Данные для выпуска физической карты.
-                Формат:
-                {
-                    "userId": "<str>",
-                    "accountId": "<str>"
-                }
-
-        Returns:
-            httpx.Response: HTTP-ответ сервиса http-gateway.
+        :param request: Словарь с данными для выпуска физической карты.
+        :return: Ответ от сервера (объект httpx.Response).
         """
         return self.post("/api/v1/cards/issue-physical-card", json=request)
+
+    # Добавили новый метод
+    def issue_virtual_card(self, user_id: str, account_id: str) -> IssueVirtualCardResponseDict:
+        request = IssueVirtualCardRequestDict(userId=user_id, accountId=account_id)
+        response = self.issue_virtual_card_api(request)
+        return response.json()
+
+    # Добавили новый метод
+    def issue_physical_card(self, user_id: str, account_id: str) -> IssuePhysicalCardResponseDict:
+        request = IssuePhysicalCardRequestDict(userId=user_id, accountId=account_id)
+        response = self.issue_physical_card_api(request)
+        return response.json()
+
+
+def build_cards_gateway_http_client() -> CardsGatewayHTTPClient:
+    """
+    Функция создаёт экземпляр CardsGatewayHTTPClient с уже настроенным HTTP-клиентом.
+
+    :return: Готовый к использованию CardsGatewayHTTPClient.
+    """
+    return CardsGatewayHTTPClient(client=build_gateway_http_client())
