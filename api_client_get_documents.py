@@ -1,3 +1,4 @@
+import logger
 
 from clients.http.gateway.accounts.client import build_accounts_gateway_http_client
 from clients.http.gateway.documents.client import build_documents_gateway_http_client
@@ -21,9 +22,9 @@ print("Open credit card account response: %s", open_credit_card_account_response
 account_id = open_credit_card_account_response["account"]["id"]
 
     # 3) Get tariff document
-tariff_doc_response = documents_client.get_tariff_document(account_id)
-print("Get tariff document response: %s", tariff_doc_response)
+tariff_doc = documents_client.get_tariff_document(account_id)
+logger.info("Get tariff document response: %s", tariff_doc.model_dump(by_alias=True))
 
     # 4) Get contract document
-contract_doc_response = documents_client.get_contract_document(account_id)
-print("Get contract document response: %s", contract_doc_response)
+contract_doc = documents_client.get_contract_document(account_id)
+logger.info("Get contract document response: %s", contract_doc.model_dump(by_alias=True))
