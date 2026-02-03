@@ -1,4 +1,4 @@
-from pprint import pprint
+﻿from pprint import pprint
 
 import httpx
 
@@ -7,7 +7,7 @@ import httpx
 # print(response.json())
 #
 # data = {
-#     "title": "Новая задача",
+#     "title": "РќРѕРІР°СЏ Р·Р°РґР°С‡Р°",
 #     "completed": False,
 #     "userId": 1
 # }
@@ -16,7 +16,7 @@ import httpx
 # print(response.status_code)
 # print(response.json())
 #
-# """Передача токена в хедерах"""
+# """РџРµСЂРµРґР°С‡Р° С‚РѕРєРµРЅР° РІ С…РµРґРµСЂР°С…"""
 # headers = {"Authorization": "Bearer my_secret_token"}
 # response = httpx.get("https://httpbin.org/get", headers=headers)
 #
@@ -24,30 +24,31 @@ import httpx
 # print(response.request.headers)
 # print(response.headers)
 #
-# """Передача query параметров в  урле"""
+# """РџРµСЂРµРґР°С‡Р° query РїР°СЂР°РјРµС‚СЂРѕРІ РІ  СѓСЂР»Рµ"""
 # params = {"userId": 1}
 # response = httpx.get("https://jsonplaceholder.typicode.com/todos", params=params)
 #
 # print(response.status_code)
 # pprint(response.json())
 
-# """Передача файла с его преобразованием в текст"""
+# """РџРµСЂРµРґР°С‡Р° С„Р°Р№Р»Р° СЃ РµРіРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµРј РІ С‚РµРєСЃС‚"""
 #
 #
 # files = {"file": ("example.txt", open("example.txt", "rb"))}
 # response = httpx.post("https://httpbin.org/post", files=files)
 #
-# print(response.json())  # Ответ с данными о загруженном файле
+# print(response.json())  # РћС‚РІРµС‚ СЃ РґР°РЅРЅС‹РјРё Рѕ Р·Р°РіСЂСѓР¶РµРЅРЅРѕРј С„Р°Р№Р»Рµ
 
-client = httpx.Client(
+with httpx.Client(
     base_url="https://jsonplaceholder.typicode.com",
-    headers={"Authorization": "Bearer my secret_token"}
+    headers={"Authorization": "Bearer my secret_token"},
+) as client:
+    response1 = client.get("/todos/1")
+    response2 = client.get("/todos/2")
+    response1.raise_for_status()
+    response2.raise_for_status()
 
-)
-response1 = client.get("/todos/1")
-response2 = client.get("todos/2")
-
-print(response1.status_code)
-print(response1.json())  # Данные первой задачи
-print(response2.status_code)
-print(response2.json())  # Данные второй задачи
+    print(response1.status_code)
+    print(response1.json())  # Р”Р°РЅРЅС‹Рµ РїРµСЂРІРѕР№ Р·Р°РґР°С‡Рё
+    print(response2.status_code)
+    print(response2.json())  # Р”Р°РЅРЅС‹Рµ РІС‚РѕСЂРѕР№ Р·Р°РґР°С‡Рё
