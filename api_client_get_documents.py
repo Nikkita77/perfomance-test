@@ -1,4 +1,4 @@
-import logging
+﻿import logging
 
 from clients.http.gateway.accounts.client import build_accounts_gateway_http_client
 from clients.http.gateway.documents.client import build_documents_gateway_http_client
